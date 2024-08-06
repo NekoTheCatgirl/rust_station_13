@@ -1,15 +1,13 @@
-use std::path::{Path, PathBuf};
-
-fn get_home_path() -> PathBuf {
-    PathBuf::new()
-}
+use crate::fileutils::get_home_path;
 
 pub fn client_dirs_exist() -> bool {
     let home = get_home_path();
-    let dirs_exist = exists("/client_config");
-    return dirs_exist;
+    home.join("client_config").exists()
+        && home.join("client_saves").exists()
 }
 
-fn exists(path: &str) -> bool {
-    Path::new(path).exists()
+pub fn server_dirs_exist() -> bool {
+    let home = get_home_path();
+    home.join("server_config").exists()
+        && home.join("client_saves").exists()
 }

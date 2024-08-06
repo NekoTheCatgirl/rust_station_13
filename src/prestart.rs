@@ -3,7 +3,7 @@ pub mod dirgen;
 pub mod dirrem;
 
 pub fn prestart_networkcheck() -> Result<(), ()> {
-    if let Err(_) = reqwest::blocking::get("https://www.google.com") {
+    if reqwest::blocking::get("https://www.google.com").is_err() {
         return Err(())
     }
     Ok(())
