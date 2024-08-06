@@ -17,13 +17,26 @@ mod server;
 mod fileutils;
 mod errors;
 mod logger;
+mod macros;
 
-// Start the game exit error as 0
-// If a error occurs during gameplay and the game is forced to exit, return this and use exit with this code.
+/// Start the game exit error as 0
+/// If a error occurs during gameplay and the game is forced to exit, return this and use exit with this code.
 pub static GAME_EXIT_ERROR: AtomicU16 = AtomicU16::new(0);
 
 fn main() {
     let args = args::ApplicationArguments::parse();
+    
+    match sys_info::mem_info() {
+        Ok(mem) => {
+            if mem.total < 1_048_576 {
+                exit(errors::log_error_code(13));
+            }
+        }
+        Err(_) => {
+            error!("Failed to retrieve system memory information!");
+            exit(1);
+        }
+    }
 
     if args.uninstall {
         // Got it, proceed to remove all folders relating to the game! Including log files

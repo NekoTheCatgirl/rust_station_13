@@ -10,3 +10,5 @@ Rust station 13 has a development and game discord, join [here!](https://discord
 
 ## TODO
 [ ] Finish the Error.md with explanations.
+[ ] Document high level functions.
+    [ ] Document file utils functions
