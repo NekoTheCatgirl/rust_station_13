@@ -3,7 +3,7 @@ use std::{
     process::exit, sync::atomic::{AtomicU16, Ordering},
 };
 
-use bevy::app::AppExit;
+use bevy::prelude::*;
 use clap::Parser;
 use log::{error, LevelFilter};
 
@@ -18,6 +18,7 @@ mod fileutils;
 mod errors;
 mod logger;
 mod macros;
+mod message;
 
 /// Start the game exit error as 0
 /// If a error occurs during gameplay and the game is forced to exit, return this and use exit with this code.
@@ -59,21 +60,27 @@ fn main() {
         exit(3)
     }
 
-    let exit_code = if args.server_flag {
+    let mut app = App::new();
+
+    if args.server_flag {
         // Check for server dirs.
         if !prestart::dirchecks::server_dirs_exist() {
             // Generate server dirs.
         }
         // Bootup the server system.
-        server::start_server()
+        server::start_server(&mut app);
     } else {
         // Check for client dirs.
         if !prestart::dirchecks::client_dirs_exist() {
             // Generate client dirs.
         }
         // Bootup the client system.
-        client::start_client()
-    };
+        client::start_client(&mut app);
+    }
+
+    // Add all the game systems (both sides need them to keep in sync)
+
+    let exit_code = app.run();
 
     let code = GAME_EXIT_ERROR.load(Ordering::SeqCst);
     if code != 0 {

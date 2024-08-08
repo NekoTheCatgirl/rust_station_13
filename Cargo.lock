@@ -3963,6 +3963,7 @@ dependencies = [
  "serde_json",
  "sys-info",
  "toml",
+ "walkdir",
  "whoami",
 ]
 

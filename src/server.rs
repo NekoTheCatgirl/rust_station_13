@@ -1,8 +1,6 @@
 use bevy::prelude::*;
 use bevy_quinnet::server::*;
 
-pub fn start_server() -> AppExit {
-    App::new()
-        .add_plugins(QuinnetServerPlugin::default())
-        .run()
+pub fn start_server(app: &mut App) -> &mut App {
+    app.add_plugins(QuinnetServerPlugin::default())
 }
