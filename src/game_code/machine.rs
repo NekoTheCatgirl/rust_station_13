@@ -12,13 +12,13 @@ pub struct Machine {
 
 impl Machine {
     pub fn get_components(&self) -> Vec<(Component, u16)> {
-        return self.components.clone();
+        self.components.clone()
     }
 }
 
 /// A trait required for all types that work with Machine.
 pub trait MachineInterface {
-    fn work_tick(&mut self, &mut Machine);
+    fn work_tick(&mut self, machine: &mut Machine);
     fn required_components(&self) -> Vec<(Component, u16)>;
-    fn installed_components(&self, &Machine) -> Vec<(Component, u16)>;
+    fn installed_components(&self, machine: &Machine) -> Vec<(Component, u16)>;
 }
