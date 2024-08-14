@@ -1,24 +1,90 @@
 [package]
 name = "rust_station_13"
+authors = ["Neko - Lead developer - johntheojacob@gmail.com", "All github contributors"]
+description = "A rustified verison of Space Station 13, built in bevy using quinnet networking"
+readme = "Readme.md"
+repository = "https://www.github.com/HellFireNeko/rust_station_13"
+keywords = ["gamedev", "graphics", "game", "crossplatform"]
+include = ["./assets"]
+publish = false
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+# Configure the permitted systems
+[lints.rust]
+unsafe_code = "forbid"
 
-[dependencies]
-bevy = "0.14.1"
-bevy_quinnet = "0.9.0"
-chrono = "0.4.38"
-clap = { version = "4.5.13", features = ["derive"] }
-fern = "0.6.2"
-log = "0.4.22"
-reqwest = { version = "0.12.5", features = ["blocking"] }
-serde = { version = "1.0.204", features = ["derive"] }
-serde_json = "1.0.122"
-sys-info = "0.9.1"
-toml = "0.8.19"
-whoami = "1.5.1"
+# Configure the binary
+[[bin]]
+name = "rust_station_13"
+test = false
+bench = false
 
+# Configure the workspace
+[workspace]
+resolver = "2"
+
+# Configure the profiles
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.release]
+codegen-units = 1
+lto = "thin"
+
+# Application dependencies
+[dependencies.bevy]
+version = "0.14.1"
+features = [
+  "wayland"
+]
+
+[dependencies.bevy_egui]
+version = "0.28.0"
+
+[dependencies.bevy_quinnet]
+version = "0.9.0"
+
+[dependencies.chrono]
+version = "0.4.38"
+
+[dependencies.clap]
+version = "4.5.13"
+features = [
+  "derive"
+]
+
+[dependencies.fern]
+version = "0.6.2"
+
+[dependencies.log]
+version = "0.4.22"
+
+[dependencies.serde]
+version = "1.0.204"
+features = [
+  "derive"
+]
+
+[dependencies.serde_json]
+version = "1.0.122"
+
+[dependencies.sys-info]
+version = "0.9.1"
+
+[dependencies.toml]
+version = "0.8.19"
+
+[dependencies.ureq]
+version = "2.10.1"
+
+[dependencies.whoami]
+version = "1.5.1"
+
+# Build dependencies
 [build-dependencies]
 clap = { version = "4.5.13", features = ["derive"] }
 clap_complete = "4.5.12"
