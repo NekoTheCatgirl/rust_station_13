@@ -1,6 +1,6 @@
 [package]
 name = "rust_station_13"
-authors = ["Neko - Lead developer - johntheojacob@gmail.com", "All github contributors"]
+authors = ["Neko The Catgirl - Lead developer", "All github contributors"]
 description = "A rustified verison of Space Station 13, built in bevy using quinnet networking"
 readme = "Readme.md"
 repository = "https://www.github.com/HellFireNeko/rust_station_13"
