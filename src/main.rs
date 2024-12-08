@@ -3,6 +3,7 @@ use std::{
     process::exit, sync::atomic::{AtomicU16, Ordering},
 };
 
+use args::ApplicationCommands;
 use bevy::prelude::*;
 use clap::Parser;
 use log::{error, LevelFilter};
@@ -10,10 +11,8 @@ use log::{error, LevelFilter};
 use crate::logger::setup_logger;
 
 mod args;
-mod client;
 mod game_code;
 mod prestart;
-mod server;
 mod fileutils;
 mod errors;
 mod logger;
@@ -26,6 +25,18 @@ pub static GAME_EXIT_ERROR: AtomicU16 = AtomicU16::new(0);
 
 fn main() {
     let args = args::ApplicationArguments::parse();
+
+    if args.clear_logs {
+        let _ = fs::remove_dir_all("logs");
+    }
+
+    let _ = fs::create_dir_all("logs");
+    
+    setup_logger(if args.debug {
+        LevelFilter::Debug
+    } else {
+        LevelFilter::Info
+    });
     
     match sys_info::mem_info() {
         Ok(mem) => {
@@ -39,46 +50,31 @@ fn main() {
         }
     }
 
-    if args.uninstall {
+    if args.command == ApplicationCommands::Uninstall {
         // Got it, proceed to remove all folders relating to the game! Including log files
+        info!("Uninstalling game, this may take a bit depending on how many assets were downloaded!");
+        
+        exit(0);
     }
-
-    if args.clear_logs {
-        let _ = fs::remove_dir_all("logs");
-    }
-
-    let _ = fs::create_dir_all("logs");
-
-    setup_logger(if args.log_debug {
-        LevelFilter::Debug
-    } else {
-        LevelFilter::Info
-    });
 
     if prestart::prestart_networkcheck().is_err() {
-        error!("Network error detected! Could not ping google.com (prenetwork test)");
+        error!("Network error detected! Could not ping google.com (pre-network test)");
         exit(3)
     }
 
     let mut app = App::new();
 
-    if args.server_flag {
-        // Check for server dirs.
-        if !prestart::dirchecks::server_dirs_exist() {
-            // Generate server dirs.
+    match args.command {
+        ApplicationCommands::Client => {
+            info!("Adding client code!");
+        },
+        ApplicationCommands::Server => {
+            info!("Adding server code!")
+        },
+        ApplicationCommands::Uninstall => {
+            error!("Unknown error, how did we get here?")
         }
-        // Bootup the server system.
-        server::start_server(&mut app);
-    } else {
-        // Check for client dirs.
-        if !prestart::dirchecks::client_dirs_exist() {
-            // Generate client dirs.
-        }
-        // Bootup the client system.
-        client::start_client(&mut app);
     }
-
-    // Add all the game systems (both sides need them to keep in sync)
 
     let exit_code = app.run();
 
