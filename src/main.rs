@@ -10,14 +10,14 @@ use log::{error, LevelFilter};
 
 use crate::logger::setup_logger;
 
-pub mod args;
-pub mod game_code;
-pub mod prestart;
-pub mod fileutils;
-pub mod errors;
-pub mod logger;
-pub mod macros;
-pub mod message;
+mod args;
+mod game_code;
+mod prestart;
+mod fileutils;
+mod errors;
+mod logger;
+mod macros;
+mod message;
 
 /// Start the game exit error as 0
 /// If a error occurs during gameplay and the game is forced to exit, return this and use exit with this code.
