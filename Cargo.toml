@@ -15,8 +15,8 @@ unsafe_code = "forbid"
 
 [[bin]]
 name = "rust_station_13"
-test = false
-bench = false
+test = true
+bench = true
 
 [workspace]
 resolver = "2"
