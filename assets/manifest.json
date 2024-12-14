@@ -1,0 +1,12 @@
+{
+  "assets": [
+    {
+      "path": "nest\\lorem.txt",
+      "checksum": "c5729b80a5aa683132ddc9adf181086b0e56aca08e34423e682d402198ae2665"
+    },
+    {
+      "path": "test.txt",
+      "checksum": "ca518eed64e204413fe289602842823958f6c41855589ed6d75c983cbe94b053"
+    }
+  ]
+}

@@ -1,26 +1,59 @@
 use std::{
     fs,
-    process::exit, sync::atomic::{AtomicU16, Ordering},
+    process::exit,
+    sync::atomic::{AtomicU16, Ordering},
 };
 
 use args::ApplicationCommands;
-use bevy::prelude::*;
+use bevy::{
+    log::LogPlugin, prelude::*, render::{
+        settings::{Backends, WgpuSettings},
+        RenderPlugin,
+    }
+};
 use clap::Parser;
+use fileserver::start_fileserver;
 use log::{error, LevelFilter};
 use prestart::dirrem;
 
 use crate::logger::setup_logger;
 
 mod args;
-mod prestart;
 mod errors;
+mod fileserver;
 mod logger;
+mod prestart;
 
 /// Start the game exit error as 0
 /// If a error occurs during gameplay and the game is forced to exit, return this and use exit with this code.
 pub static GAME_EXIT_ERROR: AtomicU16 = AtomicU16::new(0);
 
-fn main() {
+struct ConfiguredDefaultPlugins;
+
+impl PluginGroup for ConfiguredDefaultPlugins {
+    fn build(self) -> bevy::app::PluginGroupBuilder {
+        DefaultPlugins
+            .build()
+            .set(bevy::render::RenderPlugin {
+                render_creation: bevy::render::settings::RenderCreation::Automatic(bevy::render::settings::WgpuSettings {
+                    backends: Some(bevy::render::settings::Backends::VULKAN),
+                    ..Default::default()
+                }),
+                synchronous_pipeline_compilation: false,
+            })
+            .set(WindowPlugin {
+                primary_window: Some(Window {
+                    title: "Rust station 13".to_owned(),
+                    ..Default::default()
+                }),
+                ..Default::default()
+            })
+            .disable::<LogPlugin>()
+    }
+}
+
+#[tokio::main]
+async fn main() {
     let args = args::ApplicationArguments::parse();
 
     if args.clear_logs {
@@ -28,13 +61,13 @@ fn main() {
     }
 
     let _ = fs::create_dir_all("logs");
-    
+
     setup_logger(if args.debug {
         LevelFilter::Debug
     } else {
-        LevelFilter::Info
+        LevelFilter::Warn
     });
-    
+
     match sys_info::mem_info() {
         Ok(mem) => {
             if mem.total < 1_048_576 {
@@ -49,10 +82,12 @@ fn main() {
 
     if args.command == ApplicationCommands::Uninstall {
         // Got it, proceed to remove all folders relating to the game! Including log files
-        info!("Uninstalling game, this may take a bit depending on how many assets were downloaded!");
+        info!(
+            "Uninstalling game, this may take a bit depending on how many assets were downloaded!"
+        );
 
         dirrem::dir_cleanup();
-        
+
         exit(0);
     }
 
@@ -63,19 +98,28 @@ fn main() {
 
     let mut app = App::new();
 
+    app.add_plugins(ConfiguredDefaultPlugins);
+
     match args.command {
         ApplicationCommands::Client => {
             info!("Adding client code!");
-        },
+        }
         ApplicationCommands::Server => {
-            info!("Adding server code!")
-        },
+            info!("Adding server code!");
+
+            info!("Booting up asset server!");
+            if let Err(why) = start_fileserver().await {
+                error!("Something went wrong while starting up the fileserver!\n{why:?}");
+                exit(1);
+            }
+        }
         ApplicationCommands::Uninstall => {
             error!("Unknown error, how did we get here?")
         }
     }
 
     let exit_code = app.run();
+    info!("Game exit recieved");
 
     let code = GAME_EXIT_ERROR.load(Ordering::SeqCst);
     if code != 0 {
