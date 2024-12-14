@@ -1,13 +1,17 @@
 //! The purpose of this is for servers to be able to host their own assets.
 
-use axum::{serve, Router};
+use axum::{http::StatusCode, routing::get, serve, Router};
 use log::*;
 use serde::{Deserialize, Serialize};
+use std::{
+    env,
+    fs::{self, File},
+    io,
+    net::SocketAddr,
+    path::{Path, PathBuf},
+};
 use tokio::net::TcpListener;
 use tower_http::services::ServeDir;
-use std::{
-    fs::{self, File}, io, net::SocketAddr, path::{Path, PathBuf}
-};
 use walkdir::WalkDir;
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -27,14 +31,17 @@ pub async fn start_fileserver() -> io::Result<()> {
     // Spawn the fileserver thread
     tokio::spawn(async move {
         info!("Starting fileserver");
+
         let asset_dir = PathBuf::from("./assets");
 
         let app = Router::new()
-            .nest_service("/", ServeDir::new(asset_dir));
+            .nest_service("/assets", ServeDir::new(asset_dir))
+            .nest_service("/clients", ServeDir::new("./binaries"))
+            .route("/", get(|| async { "This is the file server." }));
 
         let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
         info!("Listening on {addr}");
-        
+
         let listener = TcpListener::bind(addr).await.unwrap();
         serve(listener, app).await.unwrap();
     });
@@ -71,7 +78,11 @@ fn generate_manifest_and_checksums(asset_dir: &str) -> io::Result<()> {
         let checksum = generate_sha256(&path)?;
 
         manifest.assets.push(AssetEntry {
-            path: path.strip_prefix(base_path).unwrap().to_string_lossy().to_string(),
+            path: path
+                .strip_prefix(base_path)
+                .unwrap()
+                .to_string_lossy()
+                .to_string(),
             checksum,
         });
     }

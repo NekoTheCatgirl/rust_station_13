@@ -33,7 +33,7 @@ codegen-units = 1
 lto = "thin"
 
 [dependencies]
-bevy = { version = "0.15.0", features = ["dynamic_linking"] }
+bevy = { version = "0.15.0" }
 bevy_egui = "0.31.1"
 chrono = "0.4.39"
 clap = { version = "4.5.13", features = ["derive"] }
