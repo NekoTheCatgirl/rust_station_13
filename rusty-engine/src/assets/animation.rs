@@ -1,0 +1,1 @@
+//! Handle animation sprites propperly.

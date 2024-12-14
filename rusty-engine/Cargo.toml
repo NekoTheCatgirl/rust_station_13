@@ -1,0 +1,30 @@
+[package]
+name = "rusty-engine"
+authors = ["Neko The Catgirl - Lead developer", "All github contributors"]
+description = "A rustified version of Space Station 13 - This is the component library to execute the game"
+version = "0.1.0"
+publish = false
+edition = "2021"
+
+[lints.rust]
+unsafe_code = "forbid"
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.release]
+codegen-units = 1
+lto = "thin"
+
+[dependencies]
+bevy = { version = "0.15.0", features = ["dynamic_linking"] }
+bevy_egui = "0.31.1"
+serde = { version = "1.0.216", features = ["derive"] }
+serde_json = "1.0.133"
+toml = "0.8.19"
+log = "0.4.22"
+rayon = "1.10.0"
+whoami = "1.5.2"

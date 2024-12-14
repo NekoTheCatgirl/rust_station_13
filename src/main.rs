@@ -7,17 +7,14 @@ use args::ApplicationCommands;
 use bevy::prelude::*;
 use clap::Parser;
 use log::{error, LevelFilter};
+use prestart::dirrem;
 
 use crate::logger::setup_logger;
 
 mod args;
-mod game_code;
 mod prestart;
-mod fileutils;
 mod errors;
 mod logger;
-mod macros;
-mod message;
 
 /// Start the game exit error as 0
 /// If a error occurs during gameplay and the game is forced to exit, return this and use exit with this code.
@@ -53,6 +50,8 @@ fn main() {
     if args.command == ApplicationCommands::Uninstall {
         // Got it, proceed to remove all folders relating to the game! Including log files
         info!("Uninstalling game, this may take a bit depending on how many assets were downloaded!");
+
+        dirrem::dir_cleanup();
         
         exit(0);
     }
