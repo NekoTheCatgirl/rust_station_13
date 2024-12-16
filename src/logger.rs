@@ -2,13 +2,14 @@ use chrono::Local;
 use colored::*;
 use fern::Dispatch;
 use log::{debug, Level, LevelFilter};
+use rusty_engine::fileutils::get_home_path;
 
 pub fn setup_logger(level: LevelFilter) {
-    
-    let log_file_name = format!(
+    let home = get_home_path();
+    let log_file_name = home.join(format!(
         "logs/logfile-{}.log",
         Local::now().format("%Y-%m-%d_%H-%M-%S")
-    );
+    ));
 
     // The logger setup is done synchronously to initialize it, then we use async tasks for logging.
     let file_logger = Dispatch::new()
