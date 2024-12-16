@@ -10,6 +10,10 @@ publish = false
 version = "0.1.0"
 edition = "2021"
 
+[features]
+default = []
+debug_dylib = ["bevy/dynamic_linking"]
+
 [lints.rust]
 unsafe_code = "forbid"
 
@@ -33,7 +37,7 @@ codegen-units = 1
 lto = "thin"
 
 [dependencies]
-bevy = { version = "0.15.0" }
+bevy = { version = "0.15.0" } # Remove Dynamic linking if building for release
 bevy_egui = "0.31.1"
 chrono = "0.4.39"
 clap = { version = "4.5.13", features = ["derive"] }

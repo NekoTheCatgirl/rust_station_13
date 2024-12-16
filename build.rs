@@ -9,6 +9,10 @@ use walkdir::WalkDir;
 include!("src/args.rs");
 
 fn main() -> std::io::Result<()> {
+    if std::env::var("PROFILE").unwrap() == "debug" {
+        println!("cargo:rustc-cfg=my_debug_feature");
+    }
+
     // Get the build profile (debug or release)
     let profile = env::var("PROFILE").expect("Unable to fetch the current profile");
 
