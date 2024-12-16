@@ -6,21 +6,16 @@ use std::{
 
 use args::ApplicationCommands;
 use bevy::{
-    log::LogPlugin, prelude::*, render::{
-        settings::{Backends, WgpuSettings},
-        RenderPlugin,
-    }
+    log::LogPlugin, prelude::*
 };
 use clap::Parser;
-use fileserver::start_fileserver;
 use log::{error, LevelFilter};
-use prestart::dirrem;
+use prestart::{dirchecks::{client_dirs_exist, server_dirs_exist}, dirgen::{client_gen, server_gen}, dirrem};
 
 use crate::logger::setup_logger;
 
 mod args;
 mod errors;
-mod fileserver;
 mod logger;
 mod prestart;
 
@@ -52,8 +47,7 @@ impl PluginGroup for ConfiguredDefaultPlugins {
     }
 }
 
-#[tokio::main]
-async fn main() {
+fn main() {
     let args = args::ApplicationArguments::parse();
 
     if args.clear_logs {
@@ -102,16 +96,24 @@ async fn main() {
 
     match args.command {
         ApplicationCommands::Client => {
+            info!("Checking configs...");
+            if client_dirs_exist() {
+
+            } else {
+                info!("No config found, generating new configs...");
+                client_gen();
+            }
             info!("Adding client code!");
         }
         ApplicationCommands::Server => {
-            info!("Adding server code!");
+            info!("Checking configs...");
+            if server_dirs_exist() {
 
-            info!("Booting up asset server!");
-            if let Err(why) = start_fileserver().await {
-                error!("Something went wrong while starting up the fileserver!\n{why:?}");
-                exit(1);
+            } else {
+                info!("No config found, generating new configs...");
+                server_gen();
             }
+            info!("Adding server code!");
         }
         ApplicationCommands::Uninstall => {
             error!("Unknown error, how did we get here?")

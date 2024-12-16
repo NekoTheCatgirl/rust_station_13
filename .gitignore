@@ -1,3 +1,5 @@
 /target
 /logs
 /binaries
+/client_config
+/server_config
