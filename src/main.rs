@@ -6,6 +6,7 @@ use tracing::{debug, info, Level};
 
 mod bevy_main;
 mod args;
+mod config;
 
 #[allow(unused)]
 fn main() {
