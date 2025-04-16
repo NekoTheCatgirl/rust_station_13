@@ -48,6 +48,77 @@ pub struct ServerConfig {
     round_stats_url: String,
     game_log_url: String,
     ban_appeal: String,
+
+    forbit_singulo_posession: bool,
+    
+    popup_admin_pm: bool,
+    
+    allow_holidays: bool,
+
+    ticklag: f64,
+
+    see_own_notes: bool,
+
+    note_fresh_days: f64,
+    note_stale_days: f64,
+
+    auto_lag_switch_pop: u32,
+
+    soft_popcap: u32,
+    soft_popcap_message: String,
+
+    hard_popcap: u32,
+    hard_popcap_message: String,
+
+    extreme_popcap: u32,
+    extreme_popcap_message: String,
+
+    // Used only for active donators
+    donator_bypass_popcap: bool,
+
+    notify_new_player_age: f64,
+
+    notify_new_player_account_age: f64,
+
+    panic_bunker: bool,
+    panic_bunker_interview: bool,
+    panic_bunker_living: u32,
+    panic_bunker_message: String,
+    panic_server_address: String,
+    panic_server_name: String,
+
+    announce_admin_logout: bool,
+    announce_admin_logout_message: String,
+    announce_admin_login: bool,
+    announce_admin_login_message: String,
+
+    map_rotation: bool,
+
+    preferece_map_voting: u32,
+
+    // Dangerous, giving all players admin could be problematic.
+    auto_admin: bool,
+    // Auto deadmin configuration (if admin is joining a round, remove their admin power for the round)
+    auto_deadmin_always: bool,
+    auto_deadmin_on_ready_or_latejoin: bool,
+    auto_deadmin_antag: bool,
+    auto_deadmin_heads: bool,
+    auto_deadmin_sec: bool,
+    auto_deadmin_silicon: bool,
+
+    client_min_version: Version,
+
+    second_topic_limit: u32,
+    minute_topic_limit: u32,
+
+    
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Version {
+    major: u32,
+    minor: u32,
+    fix: u32,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
